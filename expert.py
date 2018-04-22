@@ -2,27 +2,23 @@ from random import choice
 from pyknow import *
 
 
-class Light(Fact):
-    """Info about the traffic light."""
-    pass
+class Score():
+    points: 0
 
 
-class RobotCrossStreet(KnowledgeEngine):
-    @Rule(Light(color='green'))
-    def green_light(self):
-        print("Walk")
+class Advice(KnowledgeEngine):
 
-    @Rule(Light(color='red'))
-    def red_light(self):
-        print("Don't walk")
+    @Rule()
+    def ask_prior_education(self):
+        self.declare(Fact(education=input(
+            "What's was your previous education? ")))
+    
+    @Rule(
+        Fact(education=MATCH.education))
+    def show_information(self, education):
+        print("%s! " % (education))
 
-    @Rule(AS.light << Light(color=L('yellow') | L('blinking-yellow')))
-    def cautious(self, light):
-        print("Be cautious because light is", light["color"])
 
-
-engine = RobotCrossStreet()
-engine.reset()
-engine.declare(
-    Light(color=choice(['green', 'yellow', 'blinking-yellow', 'red'])))
-engine.run()
+engine = Advice()
+engine.reset()  # Prepare the engine for the execution.
+engine.run()  # Run it!
